@@ -44,7 +44,7 @@ class Parser:
             elif token == ")":
                 rb+=1
                 if bracket_group is None:
-                    raise EinopsError(f"Mismatched parentheses in pattern : {pattern}")
+                    raise EinopsError(f"Mismatched or nested parentheses in pattern : {pattern}")
                 self.structure.append(bracket_group)
                 bracket_group = None
             else:

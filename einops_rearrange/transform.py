@@ -20,6 +20,9 @@ class ExtractedInfo(NamedTuple):
     output_structure: List[List[Union[str, AnonymousAxis]]]
     added_axes: Dict[int, int]
 
+    def __str__(self):
+        return "\n".join([f"{k} : {v}" for k,v in self._asdict().items()]) 
+
 def extract_information(pattern: str, known_axes: Dict[str, int], ndim: int) -> ExtractedInfo:
     """
     Parses the einops pattern and extracts relevant transformation information.
@@ -30,6 +33,9 @@ def extract_information(pattern: str, known_axes: Dict[str, int], ndim: int) -> 
         raise EinopsError(f"Invalid pattern: {pattern}")
 
     in_pattern, out_pattern = Parser(splits[0], is_input=True), Parser(splits[1], is_input=False)
+
+    if not in_pattern.identifiers or not out_pattern.identifiers:
+        raise EinopsError(f"Missing identifiers in the pattern : {pattern}")
 
     if in_pattern.has_ellipsis and not out_pattern.has_ellipsis:
         raise EinopsError(f"Ellipsis present in the left side but missing from the right: {pattern}")
