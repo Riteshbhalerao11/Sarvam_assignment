@@ -1,39 +1,30 @@
-from typing import Union, List, Dict
+from typing import Union
 import numpy as np
-from .transform import extract_information, apply_transform
+from .transform import extract_information, apply_transform, ExtractedInfo
 
-def rearrange(tensor: Union[np.ndarray, List[np.ndarray]], pattern: str, **axes_lengths: Dict[str, int]) -> np.ndarray:
+def rearrange(tensor: Union[np.ndarray, list], pattern: str, **axes_lengths: int) -> np.ndarray:
     """
     Rearranges an input tensor according to the specified pattern.
-    
-    :param tensor: Input tensor (numpy array or list of numpy arrays)
-    :param pattern: String specifying the rearrangement pattern
-    :param axes_lengths: Dictionary mapping axis names to their lengths
-    :return: Rearranged numpy array
+
+    Args:
+        tensor (Union[np.ndarray, list]): Input tensor (NumPy array or list of NumPy arrays).
+        pattern (str): String specifying the rearrangement pattern.
+        axes_lengths (dict): Dictionary mapping axis names to their lengths.
+
+    Returns:
+        np.ndarray: Rearranged NumPy array.
+
+    Raises:
+        ValueError: If the input tensor is not a valid NumPy array or cannot be transformed.
+        EinopsError: If there are inconsistencies in the pattern transformation.
     """
     if isinstance(tensor, list):
         tensor = np.array(tensor)
-    
-    ndim = tensor.ndim
-    
-    # Extract pattern information
-    extracted_info = extract_information(pattern, axes_lengths, ndim)
-    (
-        in_known_unk,
-        axis_len_map,
-        permutation_order,
-        repeat_axes_pos,
-        axis_pos_map,
-        out_pattern_structure,
-        added_axes
-    ) = extracted_info
 
-    # print(extracted_info)
+    ndim = tensor.ndim
+
+    # Extract transformation details
+    extracted_info: ExtractedInfo = extract_information(pattern, axes_lengths, ndim)
     
-    # Apply transformation
-    rearranged_tensor = apply_transform(tensor,
-        in_known_unk, axis_len_map, tensor.shape, permutation_order,
-        axis_pos_map, out_pattern_structure, added_axes
-    )
-    
-    return rearranged_tensor
+    # Apply transformation using extracted information
+    return apply_transform(tensor, extracted_info)

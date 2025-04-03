@@ -1,0 +1,2 @@
+class EinopsError(RuntimeError):
+    pass

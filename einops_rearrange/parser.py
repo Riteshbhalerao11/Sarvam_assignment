@@ -1,20 +1,26 @@
 from typing import List, Set, Union
-from . import EinopsError
+from .errors import EinopsError
 
 class AnonymousAxis:
-    """Anonymous axis representation ensuring unique instances."""
+    """
+    Anonymous axis representation ensuring unique instances.
+    
+    """
     def __init__(self, value: str):
         self.value = int(value)
-        if self.value <= 1:
-            if self.value == 1:
-                raise EinopsError("No need to create anonymous axis of length 1.")
+        if self.value < 1:
             raise EinopsError(f"Anonymous axis should have positive length, not {self.value}")
     
     def __repr__(self):
         return "{}-axis".format(str(self.value))
 
 class Parser:
+    """
+    Parser to break down pattern into suitable format required for further operations.
+
+    """
     def __init__(self, pattern: str, is_input: bool):
+
         self.has_ellipsis: bool = "..." in pattern
         self.identifiers: Set[str] = set()
         self.structure: List[Union[List[str], str]] = []
@@ -27,7 +33,7 @@ class Parser:
         bracket_group = None
         tokens = pattern.replace("(", " ( ").replace(")", " ) ").split()
         
-        #Bracket counts
+        # Bracket counts
         lb = 0 
         rb = 0
 
@@ -47,13 +53,16 @@ class Parser:
             raise EinopsError(f"Paranthesis are not properly closed in pattern : {pattern}")
 
     def add_axis(self, token: str, bracket_group: list, is_input: bool, pattern: str):
-        """Handles axis addition, ensuring uniqueness and validity."""
+        """
+        Handles axis addition, ensuring uniqueness and validity.
+        
+        """
         if token in self.identifiers:
             raise EinopsError(f'Pattern contains duplicate dimension "{token}"')
 
         if token == "...":
             if bracket_group is None:
-                self.structure.append("ELLIPSIS")
+                self.structure.append("ELLIPSIS") # Proxy for "..."
             else:
                 if is_input:
                     raise EinopsError(f"Ellipsis inside parentheses on the left side is not allowed: {pattern}")
@@ -64,15 +73,21 @@ class Parser:
 
             is_number = token.isdecimal()
 
+            # Handles singleton dimension
             if is_number and int(token) == 1:
+
+                # Accounts for decompositon of axis
                 if bracket_group is None:
                     self.structure.append([])
                 return
-
+            
+            # Handles anonymous axes
             if is_number:
                 if is_input:
                     raise EinopsError(f"Anonymous axis (except 1) in the left side is not allowed: {pattern}")
                 token = AnonymousAxis(token)
+            
+            # Handles normal (str) axes 
             else:
                 if not str.isidentifier(token):
                     raise EinopsError(f"Invalid identifier for axis name. Only valid python identifiers are allowed. : {token}")
