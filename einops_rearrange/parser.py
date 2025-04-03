@@ -9,6 +9,9 @@ class AnonymousAxis:
             if self.value == 1:
                 raise EinopsError("No need to create anonymous axis of length 1.")
             raise EinopsError(f"Anonymous axis should have positive length, not {self.value}")
+    
+    def __repr__(self):
+        return "{}-axis".format(str(self.value))
 
 class Parser:
     def __init__(self, pattern: str, is_input: bool):
@@ -60,8 +63,8 @@ class Parser:
         else:
 
             is_number = token.isdecimal()
+
             if is_number and int(token) == 1:
-                # Skip explicit axis of length 1
                 if bracket_group is None:
                     self.structure.append([])
                 return
@@ -80,7 +83,3 @@ class Parser:
                 self.structure.append([token])
             else:
                 bracket_group.append(token)
-
-    def flat_axes_order(self):
-        """Flattens nested axes into a single list."""
-        return [axis for group in self.structure for axis in (group if isinstance(group, list) else [group])]
