@@ -159,7 +159,7 @@ The overall workflow for the `rearrange` function is as follows:
 ### **High-Level Flow Diagram**
 
 <p align="center">
-  <img src="https://github.com/Riteshbhalerao11/Sarvam_assignment/blob/master/einops_diagram.png" alt="Einops Rearrange Diagram">
+  <img src="https://github.com/Riteshbhalerao11/Sarvam_assignment/blob/master/assets/einops_diagram.png" alt="Einops Rearrange Diagram">
 </p>
 
 ---
