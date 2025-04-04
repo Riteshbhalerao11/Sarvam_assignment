@@ -8,7 +8,7 @@ This repository contains the code for the implementation of the `rearrange` func
 1. [Submission Details](#submission-details)
 2. [Running the Code and Tests](#running-the-code-and-tests)  
    - [Clone the Repository](#clone-the-repository)  
-   - [Install Dependencies](#install-dependencies)  
+   - [Install Dependencies](#install-package-and-dependencies)  
    - [Running the Code](#running-the-code)  
    - [Running Tests](#running-tests)
 3. [Brief Function Documentation](#brief-function-documentation)
@@ -76,7 +76,7 @@ pytest tests/
 
 | Name          | Type                               | Description                                                                 | Default |
 |--------------|----------------------------------|-------------------------------------------------------------------------|---------|
-| `tensor`     | `numpy.ndarray`    | Tensor of any supported library (e.g., `numpy.ndarray`, `torch.Tensor`). A list of tensors is also accepted, provided they have the same shape. | **Required** |
+| `tensor`     | `numpy.ndarray`    | A tensor from numpy library. | **Required** |
 | `pattern`    | `str`                             | String specifying the desired rearrangement pattern.                     | **Required** |
 | `axes_lengths` | `int`                          | Additional specifications for inferred dimensions.                       | `{}` |
 
@@ -97,7 +97,7 @@ For usage examples click [here](https://colab.research.google.com/drive/1OGQrqFR
 
 ## **Implementation Approach**
 
-Following is the description of the `rearrange` function, which supports `rearrange` and `repeat` functionality from `einops`. The module applies tensor transformations based on a pattern string, just like `einops`. The approach is broken into four distinct steps:
+Following is the description of the `rearrange` function, which supports `rearrange` and `repeat` functionality from `einops`. The package applies tensor transformations based on a pattern string, just like `einops`. The approach is broken into four distinct steps:
 
 1. **Parser**
 2. **Information Extractor**
@@ -150,7 +150,7 @@ The overall workflow for the `rearrange` function is as follows:
 #### **4. Transformer**
 - **Module:** `transform.py` (function: `apply_transform`)  
 - **Purpose:**  
-  - Applies the computed transformations to the tensor using numpy `reshape`, `transpose`, and `expand_dims`, based on the data provided by previous functions.  
+  - Applies the computed transformations to the tensor using numpy `reshape`, `transpose`, `broadcast`, and `expand_dims`, based on the data provided by previous functions.  
   - **Initial Reshape:** If the inferred shape indicates, the tensor is reshaped to an intermediate form.  
   - **Transposition:** The tensor’s dimensions are reordered based on the permutation order extracted earlier.  
   - **Repetition:** New axes are inserted and then broadcast to the appropriate size.  
