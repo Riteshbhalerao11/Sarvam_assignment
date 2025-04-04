@@ -145,18 +145,7 @@ The design is highly modular to ensure isolation, maintainability, and easier un
 
 Below is a simple diagram illustrating the four-step process:
 
-```mermaid
-flowchart TD
-    A[Input Tensor & Pattern]
-    B[Parser]
-    C[Information Extractor]
-    D[Dimension Calculator]
-    E[Transformer]
-    F[Output Tensor]
-    
-    A --> B
-    B --> C
-    C --> D
-    D --> E
-    E --> F
-```
+<p align="center">
+  <img src="https://github.com/Riteshbhalerao11/Sarvam_assignment/blob/master/einops_diagram.png" alt="Einops Rearrange Diagram">
+</p>
+
