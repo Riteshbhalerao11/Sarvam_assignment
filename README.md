@@ -10,8 +10,9 @@ This repository contains the code for the implementation of the `rearrange` func
    - [Clone the Repository](#clone-the-repository)  
    - [Install Dependencies](#install-dependencies)  
    - [Running the Code](#running-the-code)  
-   - [Running Tests](#running-tests)  
-3. [Implementation Approach](#implementation-approach)  
+   - [Running Tests](#running-tests)
+3. [Brief Function Documentation](#brief-function-documentation)
+4. [Implementation Approach](#implementation-approach)  
    - [Overview of the Process](#overview-of-the-process)  
    - [Detailed Steps](#detailed-steps)  
      - [Parser](#1-parser)  
@@ -19,7 +20,7 @@ This repository contains the code for the implementation of the `rearrange` func
      - [Dimension Calculator](#3-dimension-calculator)  
      - [Transformer](#4-transformer)  
    - [High-Level Flow Diagram](#high-level-flow-diagram)  
-4. [References](#references)  
+5. [References](#references)  
 
 ---
 
@@ -68,7 +69,8 @@ pytest tests/
 
 ---
 
-## **`einops_rearrange.rearrange` - Function Documentation**
+## Brief Function Documentation
+### **`einops_rearrange.rearrange`
 
 ### **Parameters**
 
