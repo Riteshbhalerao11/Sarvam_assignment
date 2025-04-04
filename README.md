@@ -38,7 +38,7 @@ git clone https://github.com/Riteshbhalerao11/Sarvam_assignment.git
 cd Sarvam_assignment
 ```
 
-### **Install Dependencies**  
+### **Install Package and Dependencies**  
 ```bash
 pip install .
 ```
