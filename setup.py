@@ -5,8 +5,8 @@ setup(
     version="0.1.0",
     packages=find_packages(),
     install_requires=[
-        "numpy==2.2.4",
-        "pytest==8.3.5"
+        "numpy",
+        "pytest"
     ],
     python_requires=">=3.10",
 )
