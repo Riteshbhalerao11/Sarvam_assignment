@@ -85,7 +85,7 @@ class Parser:
                     raise EinopsError(f"Anonymous axis (except 1) in the left side is not allowed: {pattern}")
                 token = AnonymousAxis(token)
             
-            # Handles normal (str) axes 
+            # Handles named axes 
             else:
                 if not str.isidentifier(token):
                     raise EinopsError(f"Invalid identifier for axis name. Only valid python identifiers are allowed. : {token}")

@@ -13,10 +13,10 @@ class ExtractedInfo(NamedTuple):
     Extracted information from pattern necessary for further analysis
 
     """
-    known_unk: List[Tuple[List[int], List[int]]] 
-    axis_lengths: List[int]
-    permutation_order: List[int]
-    axis_position_map: Dict[Union[str, AnonymousAxis], int]
+    known_unk: List[Tuple[List[int], List[int]]] # Number of known and unknown dims for every axis
+    axis_lengths: List[int] 
+    permutation_order: List[int] 
+    axis_position_map: Dict[Union[str, AnonymousAxis], int] 
     output_structure: List[List[Union[str, AnonymousAxis]]]
     added_axes: Dict[int, int]
 
@@ -69,7 +69,6 @@ def extract_information(pattern: str, known_axes: Dict[str, int], ndim: int) -> 
 
         out_pattern_struct = []
         for axis in out_pattern.structure:
-
             if isinstance(axis, str) and axis == "ELLIPSIS":
                 out_pattern_struct.extend([[ax] for ax in generated_axes])
             

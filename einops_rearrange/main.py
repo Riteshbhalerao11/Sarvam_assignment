@@ -1,4 +1,3 @@
-from typing import Union
 import numpy as np
 from .transform import extract_information, apply_transform, ExtractedInfo
 
