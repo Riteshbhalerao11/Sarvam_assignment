@@ -13,7 +13,7 @@ class ExtractedInfo(NamedTuple):
     Extracted information from pattern necessary for further analysis
 
     """
-    known_unk: List[Tuple[List[int], List[int]]] # Number of known and unknown dims for every axis
+    known_unk: List[Tuple[List[int], List[int]]] # Position of known and unknown dims for every axis
     axis_lengths: List[int] 
     permutation_order: List[int] 
     axis_position_map: Dict[Union[str, AnonymousAxis], int] 
@@ -113,7 +113,7 @@ def extract_information(pattern: str, known_axes: Dict[str, int], ndim: int) -> 
         if ax not in axis_len_map:
             raise EinopsError(f"Unspecified axis passed as an argument: {ax}")
         
-    # Input known_unknown mapping (Number of known and unknown lengths for every axis) 
+    # Input known_unknown mapping (Positions of known and unknown lengths for every axis) 
     in_known_unk: List[Tuple[List[int], List[int]]] = [] 
     axis_pos_map = {name: pos for pos, name in enumerate(axis_len_map)} # Axis-to-Position mapping
 
