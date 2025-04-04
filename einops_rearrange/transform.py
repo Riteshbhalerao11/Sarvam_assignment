@@ -22,6 +22,7 @@ class ExtractedInfo(NamedTuple):
 
     def __str__(self):
         return "\n".join([f"{k} : {v}" for k,v in self._asdict().items()]) 
+    
 
 def extract_information(pattern: str, known_axes: Dict[str, int], ndim: int) -> ExtractedInfo:
     """
@@ -60,21 +61,27 @@ def extract_information(pattern: str, known_axes: Dict[str, int], ndim: int) -> 
         generated_axes = [f"ELLIPSIS_{i}" for i in range(ellipsis_count)]
 
         in_pattern_struct = []
-        for ax in in_pattern.structure:
-            if ax == "ELLIPSIS":
-                in_pattern_struct.extend(generated_axes)
+        for axis in in_pattern.structure:
+            if axis == "ELLIPSIS":
+                in_pattern_struct.extend([[ax] for ax in generated_axes])
             else:
-                in_pattern_struct.append(ax)
+                in_pattern_struct.append(axis)
 
         out_pattern_struct = []
-        for ax in out_pattern.structure:
-            if ax == "ELLIPSIS":
-                out_pattern_struct.extend(generated_axes)
-            else:
-                out_pattern_struct.append(ax)
+        for axis in out_pattern.structure:
 
-        in_pattern.identifiers.update(generated_axes)
-        out_pattern.identifiers.update(generated_axes)
+            if isinstance(axis, str) and axis == "ELLIPSIS":
+                out_pattern_struct.extend([[ax] for ax in generated_axes])
+            
+            elif isinstance(axis, list) and "ELLIPSIS" in axis:
+                index = axis.index("ELLIPSIS")
+                new_axis = axis.copy()  
+                new_axis[index:index+1] = generated_axes
+                out_pattern_struct.append(new_axis)
+            
+            else:
+                out_pattern_struct.append(axis)
+
     else:
         expected_dims = len(in_pattern.structure)
         if ndim != expected_dims:
@@ -82,6 +89,7 @@ def extract_information(pattern: str, known_axes: Dict[str, int], ndim: int) -> 
         in_pattern_struct, out_pattern_struct = in_pattern.structure, out_pattern.structure
 
     axis_len_map: Dict[Union[str, AnonymousAxis], int] = OrderedDict() # Axis-to-Length mapping
+
     in_pattern_ordered = list(itertools.chain.from_iterable(in_pattern_struct))
 
     _unknown = -1
@@ -89,6 +97,7 @@ def extract_information(pattern: str, known_axes: Dict[str, int], ndim: int) -> 
         axis_len_map[ax] = known_axes[ax] if ax in known_axes else _unknown
 
     out_pattern_ordered = list(itertools.chain.from_iterable(out_pattern_struct))
+
     repeat_axes_pos: Dict[Union[str, AnonymousAxis], int] = {}
 
     # Mapping the axis lengths that are already known  
@@ -117,7 +126,7 @@ def extract_information(pattern: str, known_axes: Dict[str, int], ndim: int) -> 
             raise EinopsError(f"Could not infer sizes for axes {[in_pattern_ordered[i] for i in unknown]}.")
 
         in_known_unk.append((known, unknown))
-    
+
     # Evaluate permutation order 
     permutation_order = [in_pattern_ordered.index(axis) for axis in out_pattern_ordered if axis in in_pattern_ordered]
     # Additional axes for repetition

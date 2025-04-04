@@ -9,7 +9,7 @@ class AnonymousAxis:
     def __init__(self, value: str):
         self.value = int(value)
         if self.value < 1:
-            raise EinopsError(f"Anonymous axis should have positive length, not {self.value}")
+            raise ValueError(f"Anonymous axis should have positive length, not {self.value}")
     
     def __repr__(self):
         return "{}-axis".format(str(self.value))
@@ -49,7 +49,7 @@ class Parser:
                 bracket_group = None
             else:
                 self.add_axis(token, bracket_group, is_input, pattern)
-        if lb >  rb:
+        if lb != rb:
             raise EinopsError(f"Paranthesis are not properly closed in pattern : {pattern}")
 
     def add_axis(self, token: str, bracket_group: list, is_input: bool, pattern: str):

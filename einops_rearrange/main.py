@@ -2,24 +2,18 @@ from typing import Union
 import numpy as np
 from .transform import extract_information, apply_transform, ExtractedInfo
 
-def rearrange(tensor: Union[np.ndarray, list], pattern: str, **axes_lengths: int) -> np.ndarray:
+def rearrange(tensor: np.ndarray, pattern: str, **axes_lengths: int) -> np.ndarray:
     """
     Rearranges an input tensor according to the specified pattern.
 
-    Args:
-        tensor (Union[np.ndarray, list]): Input tensor (NumPy array or list of NumPy arrays).
-        pattern (str): String specifying the rearrangement pattern.
-        axes_lengths (dict): Dictionary mapping axis names to their lengths.
-
-    Returns:
-        np.ndarray: Rearranged NumPy array.
-
-    Raises:
-        ValueError: If the input tensor is not a valid NumPy array or cannot be transformed.
-        EinopsError: If there are inconsistencies in the pattern transformation.
     """
-    if isinstance(tensor, list):
-        tensor = np.array(tensor)
+    if not isinstance(tensor,np.ndarray) : raise TypeError("Expected numpy array as input")
+    
+    for v in axes_lengths.values():
+        if not isinstance(v, int):
+            raise TypeError("All provided axis lengths must be integers.")
+        if v <= 0:
+            raise ValueError("All provided axis lengths must be positive.")
 
     ndim = tensor.ndim
 
