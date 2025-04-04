@@ -37,6 +37,7 @@ class Parser:
         lb = 0 
         rb = 0
 
+        # Determine structure and identifiers
         for token in tokens:
             if token == "(":
                 lb+=1
@@ -70,12 +71,9 @@ class Parser:
             self.identifiers.add("ELLIPSIS")
 
         else:
-
             is_number = token.isdecimal()
-
             # Handles singleton dimension
             if is_number and int(token) == 1:
-
                 # Accounts for decompositon of axis
                 if bracket_group is None:
                     self.structure.append([])
