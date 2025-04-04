@@ -70,7 +70,7 @@ pytest tests/
 ---
 
 ## Brief Function Documentation
-### **`einops_rearrange.rearrange`
+### `einops_rearrange.rearrange`
 
 ### **Parameters**
 
