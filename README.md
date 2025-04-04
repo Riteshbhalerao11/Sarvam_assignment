@@ -76,9 +76,9 @@ pytest tests/
 
 | Name          | Type                               | Description                                                                 | Default |
 |--------------|----------------------------------|-------------------------------------------------------------------------|---------|
-| `tensor`     | `Union[Tensor, List[Tensor]]`    | Tensor of any supported library (e.g., `numpy.ndarray`, `torch.Tensor`). A list of tensors is also accepted, provided they have the same shape. | **Required** |
+| `tensor`     | `numpy.ndarray`    | Tensor of any supported library (e.g., `numpy.ndarray`, `torch.Tensor`). A list of tensors is also accepted, provided they have the same shape. | **Required** |
 | `pattern`    | `str`                             | String specifying the desired rearrangement pattern.                     | **Required** |
-| `axes_lengths` | `Size`                          | Additional specifications for inferred dimensions.                       | `int` |
+| `axes_lengths` | `int`                          | Additional specifications for inferred dimensions.                       | `{}` |
 
 ### **Returns**
 
