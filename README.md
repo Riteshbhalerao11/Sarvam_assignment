@@ -159,7 +159,7 @@ The overall workflow for the `rearrange` function is as follows:
 ### **High-Level Flow Diagram**
 
 <p align="center">
-  <img src="https://github.com/Riteshbhalerao11/Sarvam_assignment/blob/master/einops_diagram.png" alt="Einops Rearrange Diagram">
+  <img src="https://github.com/Riteshbhalerao11/Sarvam_assignment/blob/master/assets/einops_diagram.png" alt="Einops Rearrange Diagram">
 </p>
 
 ---
@@ -170,7 +170,7 @@ The overall workflow for the `rearrange` function is as follows:
 
 ### **AI-Generated Content Assistance**
 
-Generative models (GPT 4-o and Claude 3.7 Sonnet) were used for:
+Generative models (GPT 4-o and Claude 3.7 Sonnet) were used only for:
 1. Generating some test cases.
 2. Optimizing certain list comprehensions for readability.
 3. Minimal code refactoring for enhanced readability (eg. fixing indentations). 
