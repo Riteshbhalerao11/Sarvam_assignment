@@ -1,15 +1,17 @@
+# **Einops from Scratch**
 
-# **Einops from scratch**
-This repository contains the code for implementation of rearrange function for tensors that support rearangement and repetition transformations. 
+This repository contains the code for the implementation of the `rearrange` function for tensors. It supports rearrangement and repetition transformations. The implementation is optimized using efficient parsing, utilizing only native Python functions and minimizing the number of array transformations.
+
+---
 
 ## **Contents**
-1. [Submission details](#submission-details)
+1. [Submission Details](#submission-details)
 2. [Running the Code and Tests](#running-the-code-and-tests)  
    - [Clone the Repository](#clone-the-repository)  
    - [Install Dependencies](#install-dependencies)  
    - [Running the Code](#running-the-code)  
    - [Running Tests](#running-tests)  
-2. [Implementation approach](#implementation-approach)  
+3. [Implementation Approach](#implementation-approach)  
    - [Overview of the Process](#overview-of-the-process)  
    - [Detailed Steps](#detailed-steps)  
      - [Parser](#1-parser)  
@@ -17,28 +19,30 @@ This repository contains the code for implementation of rearrange function for t
      - [Dimension Calculator](#3-dimension-calculator)  
      - [Transformer](#4-transformer)  
    - [High-Level Flow Diagram](#high-level-flow-diagram)  
+4. [References](#references)  
 
 ---
-# Submission details
 
-Todo: provide notebook examples
+## **Submission Details**
 
-# **Running the Code and Tests**
+Complete implementation in one notebook is present [here](https://colab.research.google.com/drive/1OGQrqFRkmgbZTz0qJ_OUcWMhukI5xqDz?usp=sharing). It contains the source code, unit tests, and some primitive examples. Alternatively, you can follow the steps in the subsequent section to install the package locally and test it.  
 
-## **Clone the Repository**  
+---
+
+## **Running the Code and Tests**
+
+### **Clone the Repository**  
 ```bash
-git clone <repository_url>
-cd <repository_name>
+git clone https://github.com/Riteshbhalerao11/Sarvam_assignment.git
+cd Sarvam_assignment
 ```
 
-## **Install Dependencies**  
+### **Install Dependencies**  
 ```bash
 pip install .
 ```
 
----
-
-## **Running the Code**  
+### **Running the Code**  
 
 Once installed, you can use the `rearrange` function inside Python:
 
@@ -53,9 +57,7 @@ result = rearrange(tensor, pattern)
 print(result.shape)  # Expected output: (3, 4, 2)
 ```
 
----
-
-## **Running Tests**  
+### **Running Tests**  
 
 All unit tests are located in the `tests/` directory.  
 Execute the following command from the project root to run all tests:
@@ -66,7 +68,32 @@ pytest tests/
 
 ---
 
-# **Implementation approach**
+## **`einops_rearrange.rearrange` - Function Documentation**
+
+### **Parameters**
+
+| Name          | Type                               | Description                                                                 | Default |
+|--------------|----------------------------------|-------------------------------------------------------------------------|---------|
+| `tensor`     | `Union[Tensor, List[Tensor]]`    | Tensor of any supported library (e.g., `numpy.ndarray`, `torch.Tensor`). A list of tensors is also accepted, provided they have the same shape. | **Required** |
+| `pattern`    | `str`                             | String specifying the desired rearrangement pattern.                     | **Required** |
+| `axes_lengths` | `Size`                          | Additional specifications for inferred dimensions.                       | `int` |
+
+### **Returns**
+
+| Type   | Description |
+|--------|-------------|
+| `Tensor` | Tensor of the same type as the input|
+
+For usage examples click [here](https://colab.research.google.com/drive/1OGQrqFRkmgbZTz0qJ_OUcWMhukI5xqDz#scrollTo=Examples)
+
+**Note**  
+- `(axis1 axis2 ..)` are used for composing axes.  
+- `()` empty parentheses count as a unitary axis (not the same as an anonymous unit axis of size `1`).  
+- `...` ellipsis can be used as a placeholder for multiple axes.  
+
+---
+
+## **Implementation Approach**
 
 Following is the description of the `rearrange` function, which supports `rearrange` and `repeat` functionality from `einops`. The module applies tensor transformations based on a pattern string, just like `einops`. The approach is broken into four distinct steps:
 
@@ -75,14 +102,12 @@ Following is the description of the `rearrange` function, which supports `rearra
 3. **Dimension Calculator**
 4. **Transformer**
 
----
-
-## **Overview of the Process**
+### **Overview of the Process**
 
 The overall workflow for the `rearrange` function is as follows:
 
 1. **Input Validation:**  
-   The main function does input checks.
+   The main function performs input checks.
 
 2. **Extract Transformation Details:**  
    The pattern string is processed through a parser that validates and breaks it into components.
@@ -97,19 +122,15 @@ The overall workflow for the `rearrange` function is as follows:
    - **Repetition:** Expanding axes where necessary.
    - **Final Reshaping:** Producing the final output tensor shape.
 
----
+### **Detailed Steps**
 
-## **Detailed Steps**
-
-### **1. Parser**
+#### **1. Parser**
 - **Module:** `parser.py`  
 - **Purpose:**  
   - Breaks down the provided pattern into a structured format.
   - Validates the presence and proper use of tokens like ellipsis (`...`), numeric dimensions (anonymous axes), and named axes.  
 
----
-
-### **2. Information Extractor**
+#### **2. Information Extractor**
 - **Module:** `transform.py` (function: `extract_information`)  
 - **Purpose:**  
   - Processes the parsed input and output patterns (obtained by splitting the pattern with `"->"`).  
@@ -117,18 +138,14 @@ The overall workflow for the `rearrange` function is as follows:
   - Establishes mappings for axis-to-position and their respective lengths.  
   - Determines known and unknown dimensions, as well as the permutation order for transposition.  
 
----
-
-### **3. Dimension Calculator**
+#### **3. Dimension Calculator**
 - **Module:** `transform.py` (function: `infer_shape`)  
 - **Purpose:**  
   - Computes the necessary reshaping parameters before and after the main transformation.  
   - Infers unknown axis sizes by comparing known products of dimensions with the actual tensor shape.  
   - Determines whether an initial or final reshape is required based on the pattern structure.  
 
----
-
-### **4. Transformer**
+#### **4. Transformer**
 - **Module:** `transform.py` (function: `apply_transform`)  
 - **Purpose:**  
   - Applies the computed transformations to the tensor using numpy `reshape`, `transpose`, and `expand_dims`, based on the data provided by previous functions.  
@@ -137,15 +154,23 @@ The overall workflow for the `rearrange` function is as follows:
   - **Repetition:** New axes are inserted and then broadcast to the appropriate size.  
   - **Final Reshape:** If required, the tensor is reshaped into its final target dimensions.  
 
----
-
-## **High-Level Flow Diagram**
-
-The design is highly modular to ensure isolation, maintainability, and easier unit testing.
-
-Below is a simple diagram illustrating the four-step process:
+### **High-Level Flow Diagram**
 
 <p align="center">
   <img src="https://github.com/Riteshbhalerao11/Sarvam_assignment/blob/master/einops_diagram.png" alt="Einops Rearrange Diagram">
 </p>
+
+---
+
+## **References**
+
+- Rogozhnikov, Alex. "Einops: Clear and reliable tensor manipulations with Einstein-like notation." International Conference on Learning Representations. 2022. [Paper Link](https://openreview.net/pdf?id=oapKSVM2bcj)
+
+### **AI-Generated Content Assistance**
+
+Generative models (GPT 4-o and Claude 3.7 Sonnet) were used for:
+1. Generating some test cases.
+2. Optimizing certain list comprehensions for readability.
+3. Minimal code refactoring for enhanced readability (eg. fixing indentations). 
+
 
