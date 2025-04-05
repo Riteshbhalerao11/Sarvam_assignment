@@ -35,9 +35,6 @@ def extract_information(pattern: str, known_axes: Dict[str, int], ndim: int) -> 
 
     in_pattern, out_pattern = Parser(splits[0], is_input=True), Parser(splits[1], is_input=False)
 
-    # if not in_pattern.identifiers or not out_pattern.identifiers:
-    #     raise EinopsError(f"Missing identifiers in the pattern : {pattern}") --> Commented to support 0 dimensional tensors
-
     if in_pattern.has_ellipsis and not out_pattern.has_ellipsis:
         raise EinopsError(f"Ellipsis present in the left side but missing from the right: {pattern}")
 

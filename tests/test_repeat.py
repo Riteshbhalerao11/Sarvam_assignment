@@ -129,3 +129,17 @@ def test_repeat_with_multiple_ellipses_locations():
     x_exp = np.expand_dims(x, axis=-1)
     x_exp = np.repeat(x_exp, repeats=2, axis=-1)
     np.testing.assert_array_equal(result, x_exp)
+
+def test_zero_dim_tensors():
+    x = np.array(7)
+    pattern_size = {
+        "->" : (),
+        " -> () ()" : (1,1),
+        "... -> ..." : (),
+        "-> 3 4": (3,4),
+    }
+    for p,s in pattern_size.items():
+        result = rearrange(x,p)
+        assert result.shape == s
+    result = rearrange(x, "-> a b  ", a=2,b=3)
+    assert result.shape == (2,3)
