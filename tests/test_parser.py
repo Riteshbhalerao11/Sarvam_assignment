@@ -121,3 +121,42 @@ def test_parse_expression():
     with pytest.raises(EinopsError):
         Parser("a ... b ... c", is_input=False)
 
+
+@pytest.mark.parametrize("pattern", [
+    ("1a b -> b 1a"),         # starts with digit
+    ("a-b c -> c a-b"),       # contains hyphen
+    ("for x -> x for"),       # Python keyword
+    ("a$ b -> b a$"),         # contains special char
+    ("a b@c -> c b@c a"),     # invalid char @
+    ("a b! -> b! a"),         # invalid char !
+    ("_a b c-> c b _a"),      # valid, should not raise
+    ("a b class -> a b class"),   # ends with Python keyword
+    ("a b def -> a b def"),     # 'def' is a keyword
+    ("a b lambda -> a b lambda"),  # keyword
+    ("a b None -> a b None"),    # keyword-like
+    ("a b True -> a b True"),    # literal
+    ("α β γ -> γ β α"),       # Greek letters (valid unicode identifiers, should not raise)
+    ("a b 你好 -> a b 你好"),   # Unicode non-identifier (CJK chars, some may not be valid Python identifiers)
+    ("a b c -> a b 'c'"),     # quote enclosed name
+])
+def test_parser_invalid_or_edge_identifiers(pattern):
+    input_side, output_side = [side.strip() for side in pattern.split("->")]
+
+    def has_invalid_names(side):
+        return any(
+            not name.isidentifier() or name in {"for", "class", "def", "lambda", "None", "True"}
+            for name in side.split()
+        )
+
+    input_invalid = has_invalid_names(input_side)
+    output_invalid = has_invalid_names(output_side)
+
+    if input_invalid or output_invalid:
+        with pytest.raises(EinopsError):
+            Parser(input_side, is_input=True)
+            Parser(output_side, is_input=False)
+    else:
+        input_parser = Parser(input_side, is_input=True)
+        output_parser = Parser(output_side, is_input=False)
+        assert input_parser is not None
+        assert output_parser is not None

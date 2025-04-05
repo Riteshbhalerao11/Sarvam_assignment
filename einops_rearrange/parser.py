@@ -1,3 +1,4 @@
+from keyword import iskeyword
 from typing import List, Set, Union
 from .errors import EinopsError
 
@@ -87,7 +88,7 @@ class Parser:
             
             # Handles named axes 
             else:
-                if not str.isidentifier(token):
+                if not str.isidentifier(token) or iskeyword(token):
                     raise EinopsError(f"Invalid identifier for axis name. Only valid python identifiers are allowed. : {token}")
             
             self.identifiers.add(token)

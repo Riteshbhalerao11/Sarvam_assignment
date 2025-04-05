@@ -52,8 +52,8 @@ def test_ellipsis_pattern():
     result = extract_information(pattern, known_axes, ndim)
     
     assert len(result.permutation_order) == 5
-    assert result.permutation_order[0] == 4  # 'c' should be first
-    assert result.permutation_order[-1] == 0  # 'a' should be last
+    assert result.permutation_order[0] == 4  
+    assert result.permutation_order[-1] == 0  
 
 def test_complex_reshape():
     # Test extracting information from a complex reshape pattern.
@@ -65,7 +65,19 @@ def test_complex_reshape():
 
     assert len(result.known_unk) == 2
     assert result.output_structure == [['a'], ['c'], ['b', 'd']]
-    assert -1 not in result.axis_lengths  # All sizes should be known
+    assert -1 not in result.axis_lengths  
+
+    pattern = "(a b) (c d e) -> (a) (c e h) (b d 2)"
+    known_axes = {'a': 2, 'b': 3, 'c': 4, 'd': 5, 'e': 6, 'h' : 10}
+    ndim = 2
+    
+    result = extract_information(pattern, known_axes, ndim)
+
+    assert result.output_structure[:-1] == [['a'], ['c', 'e', 'h']]
+    assert result.output_structure[-1][-1].value == 2 # Anonymous axis value
+    assert result.axis_lengths == [2, 3, 4, 5, 6, 10, 2]
+    assert result.added_axes == {3: 10, 6: 2}
+
 
 def test_empty_pattern():
     with pytest.raises(EinopsError):
@@ -85,6 +97,7 @@ def test_missing_identifiers():
         
     with pytest.raises(EinopsError):
         extract_information("a b c ->", {}, 3)
+
 
 def test_ellipsis_on_input_only():
     with pytest.raises(EinopsError):
@@ -151,3 +164,18 @@ def test_ellipsis_pattern():
     assert result.output_structure[0] == ['a', 'c']
     assert result.output_structure[-1] == ['d']
     assert result.output_structure[1] == [f"ELLIPSIS_{i}" for i in range(3)]
+
+
+def test_mismatched_parentheses():
+    pattern = "((a b) c) -> a (b c)"
+    known_axes = {'a': 2, 'b': 3, 'c': 4}
+    ndim = 1
+    with pytest.raises(EinopsError):
+        extract_information(pattern, known_axes, ndim)
+    
+    pattern = "((a b)) -> (a) (b)"
+    known_axes = {'a': 2, 'b': 3}
+    ndim = 1
+    with pytest.raises(EinopsError):
+        extract_information(pattern, known_axes, ndim)
+    
