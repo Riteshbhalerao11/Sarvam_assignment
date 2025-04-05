@@ -88,3 +88,44 @@ def test_repeat_with_multi_dimensional_reshaping():
 
     np.testing.assert_array_equal(rearrange_result, x_expanded)
 
+
+def test_repeat_on_scalar_broadcast():
+    # Broadcasting a scalar value along multiple new axes
+    x = np.array(7)
+    result = rearrange(x, "  -> b c d", b=2, c=3, d=4)
+
+    expected = np.full((2, 3, 4), 7)
+    np.testing.assert_array_equal(result, expected)
+
+
+def test_repeat_with_named_and_computed_axis():
+    x = np.arange(6).reshape(2, 3)
+    result = rearrange(x, "a b -> (a a2) b", a2=2)
+    assert result.shape == (4, 3)
+    expected = np.repeat(x, repeats=2, axis=0)
+    np.testing.assert_array_equal(result, expected)
+
+
+def test_repeat_and_group_mixed():
+    x = np.arange(24).reshape(2, 3, 4)
+    result = rearrange(x, "a b c -> a (b d) (c e)", d=2, e=3)
+    assert result.shape == (2, 6, 12)
+    x_rep = np.repeat(x, 2, axis=1)
+    x_rep = np.repeat(x_rep, 3, axis=2)
+    np.testing.assert_array_equal(result, x_rep)
+
+
+def test_repeat_in_middle_of_tensor():
+    x = np.arange(120).reshape(2, 3, 4, 5)
+    result = rearrange(x, "a b c d -> a b r c d", r=2)
+    x_exp = np.expand_dims(x, 2)
+    x_exp = np.repeat(x_exp, repeats=2, axis=2)
+    np.testing.assert_array_equal(result, x_exp)
+
+
+def test_repeat_with_multiple_ellipses_locations():
+    x = np.arange(2*3*4*5).reshape(2, 3, 4, 5)
+    result = rearrange(x, "... c d -> ... c d r", r=2)
+    x_exp = np.expand_dims(x, axis=-1)
+    x_exp = np.repeat(x_exp, repeats=2, axis=-1)
+    np.testing.assert_array_equal(result, x_exp)

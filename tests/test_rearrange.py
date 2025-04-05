@@ -245,3 +245,149 @@ def test_miscellaneous_cases():
         with pytest.raises(EinopsError):
             print(case)
             rearrange(x,case)
+
+
+# TESTING ON CASES FROM EINOPS LIBRARY (https://github.com/arogozhnikov/einops/blob/main/einops/tests/)
+
+def test_rearrange_examples():
+    def test1(x):
+        y = rearrange(x, "b c h w -> b h w c")
+        assert y.shape == (10, 30, 40, 20)
+        return y
+
+    def test2(x):
+        y = rearrange(x, "b c h w -> b (c h w)")
+        assert y.shape == (10, 20 * 30 * 40)
+        return y
+
+    def test3(x):
+        y = rearrange(x, "b (c h1 w1) h w -> b c (h h1) (w w1)", h1=2, w1=2)
+        assert y.shape == (10, 5, 60, 80)
+        return y
+
+    def test4(x):
+        y = rearrange(x, "b c (h h1) (w w1) -> b (h1 w1 c) h w", h1=2, w1=2)
+        assert y.shape == (10, 20 * 4, 15, 20)
+        return y
+
+    def test5(x):
+        y = rearrange(x, "b1 sound b2 letter -> b1 b2 sound letter")
+        assert y.shape == (10, 30, 20, 40)
+        return y
+
+    def test6(x):
+        t = rearrange(x, "b c h w -> (b h w) c")
+        t = t[:, ::2]
+        assert t.shape == (10 * 30 * 40, 10)
+        return t
+
+    def test7(x):
+        y = rearrange(x, "b (c g) h w -> g b c h w", g=2)
+        assert y.shape == (2, 10, 10, 30, 40)
+        return y[0] + y[1]
+
+    def test8(x):
+        tensors = rearrange(x, "b c h w -> b h w c")
+        assert tensors.shape == (10, 30, 40, 20)
+        return tensors
+
+    def test9(x):
+        tensors = rearrange(x, "b c h w -> h (b w) c")
+        assert tensors.shape == (30, 10 * 40, 20)
+        return tensors
+
+    def shufflenet(x, convolve, c1, c2):
+        x = convolve(x)
+        x = rearrange(x, "b (c1 c2) h w -> b (c2 c1) h w", c1=c1, c2=c2)
+        x = convolve(x)
+        return x
+
+    def convolve_strided_1d(x, stride, usual_convolution):
+        x = rearrange(x, "b c t1 t2 -> b c (t1 t2)")
+        x = rearrange(x, "b c (t stride) -> (stride b) c t", stride=stride)
+        x = usual_convolution(x)
+        x = rearrange(x, "(stride b) c t -> b c (t stride)", stride=stride)
+        return x
+
+    def convolve_strided_2d(x, h_stride, w_stride, usual_convolution):
+        x = rearrange(x, "b c (h hs) (w ws) -> (hs ws b) c h w", hs=h_stride, ws=w_stride)
+        x = usual_convolution(x)
+        x = rearrange(x, "(hs ws b) c h w -> b c (h hs) (w ws)", hs=h_stride, ws=w_stride)
+        return x
+
+    def unet_like_1d(x, usual_convolution):
+        x = rearrange(x, "b c t1 t2 -> b c (t1 t2)")
+        y = rearrange(x, "b c (t dt) -> b (dt c) t", dt=2)
+        y = usual_convolution(y)
+        x = x + rearrange(y, "b (dt c) t -> b c (t dt)", dt=2)
+        return x
+
+    def convolve_mock(x):
+        return x
+
+    tests = [
+        test1,
+        test2,
+        test3,
+        test4,
+        test5,
+        test6,
+        test7,
+        test8,
+        test9,
+        lambda x: shufflenet(x, convolve=convolve_mock, c1=4, c2=5),
+        lambda x: convolve_strided_1d(x, stride=2, usual_convolution=convolve_mock),
+        lambda x: convolve_strided_2d(x, h_stride=2, w_stride=2, usual_convolution=convolve_mock),
+        lambda x: unet_like_1d(x, usual_convolution=convolve_mock),
+    ]
+
+    for test in tests:
+        x = np.arange(10 * 20 * 30 * 40).reshape([10, 20, 30, 40])
+        result1 = test(x.copy())
+
+        # Now test on sliced version
+        x = np.arange(10 * 2 * 20 * 3 * 30 * 1 * 40).reshape([20, 60, 30, 40])
+        result2 = test(x[::2, ::3, ::1, ::-1])  
+
+
+equivalent_rearrange_patterns = [
+    ("a b c d e -> (a b) c d e", "a b ... -> (a b) ... "),
+    ("a b c d e -> a b (c d) e", "... c d e -> ... (c d) e"),
+    ("a b c d e -> a b c d e", "... -> ... "),
+    ("a b c d e -> (a b c d e)", "... ->  (...)"),
+    ("a b c d e -> b (c d e) a", "a b ... -> b (...) a"),
+    ("a b c d e -> b (a c d) e", "a b ... e -> b (a ...) e"),
+]
+
+identity_patterns = [
+    "...->...",
+    "a b c d e-> a b c d e",
+    "a b c d e ...-> ... a b c d e",
+    "a b c d e ...-> a ... b c d e",
+    "... a b c d e -> ... a b c d e",
+    "a ... e-> a ... e",
+    "a ... -> a ... ",
+    "a ... c d e -> a (...) c d e",
+]
+
+
+def test_equivalent_rearrange_patterns():
+
+    x = np.random.randn(2, 3, 4, 5, 6)
+
+    # Test each pair of equivalent patterns
+    for concrete, abstract in equivalent_rearrange_patterns:
+        y1 = rearrange(x, concrete)
+        y2 = rearrange(x, abstract)
+        assert y1.shape == y2.shape, f"Shape mismatch: {concrete} vs {abstract}"
+        assert np.array_equal(y1, y2), f"Value mismatch for: {concrete} vs {abstract}"
+
+
+def test_identity_patterns():
+    x = np.random.randn(2, 3, 4, 5, 6)
+
+    # Test each pair of equivalent patterns
+    for pattern in identity_patterns:
+        result = rearrange(x, pattern)
+        assert x.shape == result.shape, f"Shape mismatch: for {pattern}"
+        assert np.array_equal(x, result), f"Value mismatch for: {pattern}"
