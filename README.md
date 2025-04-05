@@ -25,8 +25,10 @@ This repository contains the code for the implementation of the `rearrange` func
 ---
 
 ## **Submission Details**
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1OGQrqFRkmgbZTz0qJ_OUcWMhukI5xqDz?usp=sharing)
 
 Complete implementation in one notebook is present [here](https://colab.research.google.com/drive/1OGQrqFRkmgbZTz0qJ_OUcWMhukI5xqDz?usp=sharing). It contains the source code, unit tests, and some primitive examples. Alternatively, you can follow the steps in the subsequent section to install the package locally and test it.  
+
 
 ---
 
