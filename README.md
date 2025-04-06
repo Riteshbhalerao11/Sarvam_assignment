@@ -7,12 +7,9 @@ This repository contains the code for the implementation of the `rearrange` func
 ## **Contents**
 1. [Submission Details](#submission-details)
 2. [Running the Code and Tests](#running-the-code-and-tests)  
-   - [Clone the Repository](#clone-the-repository)  
-   - [Install Dependencies](#install-package-and-dependencies)  
-   - [Running the Code](#running-the-code)  
-   - [Running Tests](#running-tests)
 3. [Brief Function Documentation](#brief-function-documentation)
-4. [Implementation Approach](#implementation-approach)  
+4. [Repo structure](#repo-structure)
+5. [Implementation Approach](#implementation-approach)  
    - [Overview of the Process](#overview-of-the-process)  
    - [Detailed Steps](#detailed-steps)  
      - [Parser](#1-parser)  
@@ -20,7 +17,7 @@ This repository contains the code for the implementation of the `rearrange` func
      - [Dimension Calculator](#3-dimension-calculator)  
      - [Transformer](#4-transformer)  
    - [High-Level Flow Diagram](#high-level-flow-diagram)  
-5. [References](#references)  
+6. [References](#references)  
 
 ---
 
@@ -96,6 +93,22 @@ For usage examples click [here](https://colab.research.google.com/drive/1OGQrqFR
 - `...` ellipsis can be used as a placeholder for multiple axes.  
 
 ---
+
+## Repo structure
+
+
+```
+Project Root/
+├── assets/                
+├── einops_rearrange/      # Contains the complete source code
+├── examples/              # Visual examples for rearrange 
+├── tests/                 # Unit tests
+├── .gitignore             
+├── LICENSE               
+├── README.md             
+├── setup.py             
+```
+
 
 ## **Implementation Approach**
 
@@ -174,7 +187,6 @@ The overall workflow for the `rearrange` function is as follows:
 
 Generative models (GPT 4-o and Claude 3.7 Sonnet) were used only for:
 1. Generating some test cases.
-2. Optimizing certain list comprehensions for readability.
-3. Minimal code refactoring for enhanced readability (eg. fixing indentations). 
+2. Minimal code refactoring for enhanced readability (eg. fixing indentations and optimizing certain list comprehensions). 
 
 
