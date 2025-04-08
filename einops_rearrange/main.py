@@ -7,6 +7,8 @@ def rearrange(tensor: np.ndarray, pattern: str, **axes_lengths: int) -> np.ndarr
 
     """
     if not isinstance(tensor,np.ndarray) : raise TypeError("Expected numpy array as input")
+
+    if not isinstance(pattern,str) : raise TypeError("Expected string as pattern")
     
     for v in axes_lengths.values():
         if not isinstance(v, int):
