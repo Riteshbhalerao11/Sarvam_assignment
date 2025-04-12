@@ -83,13 +83,13 @@ pytest tests/
 
 | Type   | Description |
 |--------|-------------|
-| `Tensor` | Tensor of the same type as the input|
+| `numpy.ndarray` | Tensor transformed based on pattern.|
 
 For usage examples click [here](https://colab.research.google.com/drive/1OGQrqFRkmgbZTz0qJ_OUcWMhukI5xqDz#scrollTo=Examples)
 
 **Note**  
 - `(axis1 axis2 ..)` are used for composing axes.  
-- `()` empty parentheses count as a unitary axis (not the same as an anonymous unit axis of size `1`).  
+- `()` empty parentheses count as a unitary axis (not the same as an anonymous axis of size `1`).  
 - `...` ellipsis can be used as a placeholder for multiple axes.  
 
 ---
@@ -98,7 +98,7 @@ For usage examples click [here](https://colab.research.google.com/drive/1OGQrqFR
 
 
 ```
-Project Root/
+Sarvam_assignment/
 ├── assets/                
 ├── einops_rearrange/      # Contains the complete source code
 ├── examples/              # Visual examples for rearrange 
